@@ -8,22 +8,32 @@ import java.util.List;
 
 public class USOperator {
 
-    public List<Vertex> optimize(Graph graph, List<Vertex> route) {
-        int problem_size = graph.getVertexLength();
-        int tour_length = route.size();
+    private int problem_size;
+    private int tour_length;
+    private CoordG tsp_file;
+    private int[] tour;
+    private Graph graph;
+
+    public USOperator(Graph graph, List<Vertex> route) {
+        this.graph = graph;
+        problem_size = graph.getVertexLength();
+        tour_length = route.size();
         // Init structure
         CoordG.MAXN = problem_size;
-        CoordG tsp_file = new CoordG();
+        tsp_file = new CoordG();
         for (int i = 0; i < graph.getVertexLength(); i++) {
             tsp_file.xyvalues(graph.getVertexLength(), i, graph.getVertex(i).getX(), graph.getVertex(i).getY());
         }
-        tsp_file.distances();
-        // Init genius
-        tourneelem pri;
-        int[] tour = new int[tour_length];
+        tour = new int[tour_length];
         for (int i = 0; i < tour_length; i++) {
             tour[i] = route.get(i).getId();
         }
+    }
+
+    public void optimize() {
+        tsp_file.distances();
+        // Init genius
+        tourneelem pri;
         RouteG genius = new RouteG();
         genius.initialize();
         genius.initnneighbour(tsp_file.task);
@@ -51,11 +61,13 @@ public class USOperator {
             }
             tour[problem_size] = tour[0];
         }
+    }
+
+    public List<Vertex> getResult() {
         List<Vertex> optimized = new ArrayList<>();
         for(int i = 0; i < tour.length; i++) {
             optimized.add(graph.getVertex(tour[i]));
         }
         return optimized;
     }
-
 }
