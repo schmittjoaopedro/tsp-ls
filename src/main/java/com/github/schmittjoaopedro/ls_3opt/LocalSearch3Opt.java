@@ -52,7 +52,7 @@ public class LocalSearch3Opt {
         } else if (d0 > d4) {
             reverse(tour, i, k);
             return -d0 + d4;
-        } else if (d0 > d3) { // && a != f) {
+        } else if (d0 > d3) {
             rearrange(tour, i, j, k);
             return -d0 + d3;
         }
@@ -60,8 +60,7 @@ public class LocalSearch3Opt {
     }
 
     private static void rearrange(int[] route, int i, int j, int k) {
-        int newRoute[] = new int[route.length];
-        int routeIJ[] = new int[j - i];
+         int routeIJ[] = new int[j - i];
         int routeJK[] = new int[k - j];
         for (int t = 0; t < routeIJ.length; t++) {
             routeIJ[t] = route[i + t];
@@ -71,19 +70,14 @@ public class LocalSearch3Opt {
         }
         int countIJ = 0;
         int countJK = 0;
-        for (int t = 0; t < newRoute.length; t++) {
+        for (int t = 0; t < route.length; t++) {
             if (t > i - 1 && t < i + routeJK.length) {
-                newRoute[t] = routeJK[countJK];
+                route[t] = routeJK[countJK];
                 countJK++;
             } else if (t >= i + routeJK.length && t < i + routeJK.length + routeIJ.length) {
-                newRoute[t] = routeIJ[countIJ];
+                route[t] = routeIJ[countIJ];
                 countIJ++;
-            } else {
-                newRoute[t] = route[t];
             }
-        }
-        for (int t = 0; t < newRoute.length; t++) {
-            route[t] = newRoute[t];
         }
     }
 
