@@ -22,6 +22,9 @@ public class App {
         }
         System.out.println("Problem = " + cmd.getOptionValue("tsp"));
         Graph graph = TSPConverter.readGraph(cmd.getOptionValue("tsp"));
+        if (cmd.hasOption("mag")) {
+            DynamicGenerator.execute(graph, Double.valueOf(cmd.getOptionValue("mag")), 0.0, 2.0);
+        }
         if (graph != null) {
             List<Vertex> randomRoute = Utils.randomRoute(graph);
             Utils.printRouteCost(graph, randomRoute);
@@ -52,6 +55,7 @@ public class App {
     private static Options getOptions() {
         Options options = new Options();
         options.addOption(Option.builder("tsp").hasArg().numberOfArgs(1).argName("tsp_file").desc("TSP file for processing.").build());
+        options.addOption(Option.builder("mag").hasArg().numberOfArgs(1).argName("magnitude").desc("Create asymmetric graph with variation.").build());
         options.addOption(Option.builder("stat").hasArg().numberOfArgs(1).argName("trials").desc("Statistic for all operators.").build());
         options.addOption(Option.builder("ls").hasArg().numberOfArgs(1).argName("local_search")
                 .desc("all = All local search\n" +
