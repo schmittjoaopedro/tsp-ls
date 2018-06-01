@@ -17,27 +17,21 @@ public class App {
         Options options = getOptions();
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
-        boolean symmetric = true;
         if (!cmd.hasOption("tsp")) {
             throw new RuntimeException("Graph file is mandatory");
         }
         System.out.println("Problem = " + cmd.getOptionValue("tsp"));
         Graph graph = TSPConverter.readGraph(cmd.getOptionValue("tsp"));
-        if (cmd.getOptionValue("tsp").endsWith(".atsp")) {
-            symmetric = false;
-        }
         if (graph != null) {
             List<Vertex> randomRoute = Utils.randomRoute(graph);
             Utils.printRouteCost(graph, randomRoute);
             if (cmd.hasOption("stat")) {
-                loadTest(graph, Integer.valueOf(cmd.getOptionValue("stat")), symmetric);
+                loadTest(graph, Integer.valueOf(cmd.getOptionValue("stat")));
             } else if ("all".equals(cmd.getOptionValue("ls"))) {
                 // 2-opt operator
                 execute(OPT2Operator.class, graph, randomRoute);
-                if (symmetric) {
-                    // 3-opt operator
-                    execute(OPT3Operator.class, graph, randomRoute);
-                }
+                // 3-opt operator
+                execute(OPT3Operator.class, graph, randomRoute);
                 // res-3-opt operator
                 execute(OPT3RESOperator.class, graph, randomRoute);
                 // US operator
@@ -79,7 +73,7 @@ public class App {
         Utils.printRouteCost(graph, operator.getResult());
     }
 
-    private static void loadTest(Graph graph, int trials, boolean symmetric) {
+    private static void loadTest(Graph graph, int trials) {
         Map<String, List<Double>> means = new HashMap<>();
         means.put("rnd_tour_cost", new ArrayList<>());
         means.put("rnd_tour_time", new ArrayList<>());
@@ -87,10 +81,8 @@ public class App {
         means.put("2opt_tour_time", new ArrayList<>());
         means.put("us_tour_cost", new ArrayList<>());
         means.put("us_tour_time", new ArrayList<>());
-        if (symmetric) {
-            means.put("3opt_tour_cost", new ArrayList<>());
-            means.put("3opt_tour_time", new ArrayList<>());
-        }
+        means.put("3opt_tour_cost", new ArrayList<>());
+        means.put("3opt_tour_time", new ArrayList<>());
         means.put("res_3opt_tour_cost", new ArrayList<>());
         means.put("res_3opt_tour_time", new ArrayList<>());
         for (int i = 0; i < trials; i++) {
@@ -107,16 +99,14 @@ public class App {
             time = System.currentTimeMillis() - time;
             means.get("2opt_tour_cost").add(Utils.getRouteCost(graph, ls2opt.getResult()));
             means.get("2opt_tour_time").add((double) time);
-            if (symmetric) {
-                // 3opt tour
-                LSOperator ls3opt = new OPT3Operator();
-                ls3opt.init(graph, randomTour);
-                time = System.currentTimeMillis();
-                ls3opt.optimize();
-                time = System.currentTimeMillis() - time;
-                means.get("3opt_tour_cost").add(Utils.getRouteCost(graph, ls3opt.getResult()));
-                means.get("3opt_tour_time").add((double) time);
-            }
+            // 3opt tour
+            LSOperator ls3opt = new OPT3Operator();
+            ls3opt.init(graph, randomTour);
+            time = System.currentTimeMillis();
+            ls3opt.optimize();
+            time = System.currentTimeMillis() - time;
+            means.get("3opt_tour_cost").add(Utils.getRouteCost(graph, ls3opt.getResult()));
+            means.get("3opt_tour_time").add((double) time);
             // res-3opt tour
             LSOperator lsRes3opt = new OPT3RESOperator();
             lsRes3opt.init(graph, randomTour);
@@ -134,17 +124,28 @@ public class App {
             means.get("us_tour_cost").add(Utils.getRouteCost(graph, lsus.getResult()));
             means.get("us_tour_time").add((double) time);
         }
-        for (Map.Entry<String, List<Double>> stats : means.entrySet()) {
-            double mean = 0;
-            for (double val : stats.getValue()) {
-                mean += val;
-            }
-            mean = mean / trials;
-            StringBuilder message = new StringBuilder(stats.getKey());
-            while (message.length() < 15) message.append(" ");
-            message.append(" = ").append(mean);
-            System.out.println(message);
+        printValue("rnd_tour_time", means.get("rnd_tour_time"), trials);
+        printValue("2opt_tour_time", means.get("2opt_tour_time"), trials);
+        printValue("3opt_tour_time", means.get("3opt_tour_time"), trials);
+        printValue("res_3opt_tour_time", means.get("res_3opt_tour_time"), trials);
+        printValue("us_tour_time", means.get("us_tour_time"), trials);
+        printValue("rnd_tour_cost", means.get("rnd_tour_cost"), trials);
+        printValue("2opt_tour_cost", means.get("2opt_tour_cost"), trials);
+        printValue("3opt_tour_cost", means.get("3opt_tour_cost"), trials);
+        printValue("res_3opt_tour_cost", means.get("res_3opt_tour_cost"), trials);
+        printValue("us_tour_cost", means.get("us_tour_cost"), trials);
+    }
+
+    public static void printValue(String key, List<Double> values, int trials) {
+        double mean = 0;
+        for (double val : values) {
+            mean += val;
         }
+        mean = mean / trials;
+        StringBuilder message = new StringBuilder(key);
+        while (message.length() < 15) message.append(" ");
+        message.append(" = ").append(mean);
+        System.out.println(message);
     }
 
 }

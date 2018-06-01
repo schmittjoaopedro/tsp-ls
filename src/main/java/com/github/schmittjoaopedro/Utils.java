@@ -1,17 +1,19 @@
 package com.github.schmittjoaopedro;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-class Utils {
+public class Utils {
 
-    static double getEuclideanDistance(Vertex n1, Vertex n2) {
+    public static double getEuclideanDistance(Vertex n1, Vertex n2) {
         double x1 = n1.getX() - n2.getX();
         double y1 = n1.getY() - n2.getY();
         return Math.sqrt(x1 * x1 + y1 * y1);
     }
 
-    static List<Vertex> randomRoute(Graph graph) {
+    public static List<Vertex> randomRoute(Graph graph) {
         List<Vertex> route = new ArrayList<>();
         List<Vertex> temp = new ArrayList<>(graph.getVertices());
         while (!temp.isEmpty()) {
@@ -23,7 +25,7 @@ class Utils {
         return route;
     }
 
-    static double getRouteCost(Graph graph, List<Vertex> route) {
+    public static double getRouteCost(Graph graph, List<Vertex> route) {
         double cost = 0.0;
         for (int i = 0; i < route.size() - 1; i++) {
             cost += graph.getEdge(route.get(i).getId(), route.get(i + 1).getId()).getDistance();
@@ -31,11 +33,16 @@ class Utils {
         return cost;
     }
 
-    static void printRouteCost(Graph graph, List<Vertex> route) {
+    public static void printRouteCost(Graph graph, List<Vertex> route) {
         double cost = getRouteCost(graph, route);
         StringBuilder routePath = new StringBuilder();
-        for(Vertex vertex : route) {
+        Set<Integer> routes = new HashSet<>();
+        for (Vertex vertex : route) {
+            routes.add(vertex.getId());
             routePath.append(vertex.getId() + 1).append("-");
+        }
+        if (route.get(0).getId() != route.get(route.size() - 1).getId() && route.size() - 1 != routes.size()) {
+            throw new RuntimeException("Invalid route");
         }
         routePath.deleteCharAt(routePath.length() - 1);
         System.out.println("Cost = " + cost + ", Route = " + routePath);

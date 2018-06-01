@@ -12,7 +12,7 @@ class LocalSearch3Opt {
             for (int i = 1; i < N; i++) {
                 for (int j = i + 2; j < N; j++) {
                     for (int k = j + 2; k < N; k++) {
-                        if (execute3Swap(newTour, distances, i, j, k) < 0) {
+                        if (execute3Swap(newTour, distances, i, j, k)) {
                             improvement = true;
                             System.arraycopy(newTour, 0, tour, 0, N);
                         }
@@ -22,7 +22,7 @@ class LocalSearch3Opt {
         }
     }
 
-    private static double execute3Swap(int[] tour, double[][] dist, int i, int j, int k) {
+    private static boolean execute3Swap(int[] tour, double[][] dist, int i, int j, int k) {
         // [...,A-B,...,C-D,...,E-F,...]
         int a = tour[i - 1];
         int b = tour[i];
@@ -37,18 +37,18 @@ class LocalSearch3Opt {
         double d4 = dist[f][b] + dist[c][d] + dist[e][a];
         if (d0 > d1) {
             reverse(tour, i, j);
-            return -d0 + d1;
+            return true;
         } else if (d0 > d2) {
             reverse(tour, j, k);
-            return -d0 + d2;
+            return true;
         } else if (d0 > d4) {
             reverse(tour, i, k);
-            return -d0 + d4;
+            return true;
         } else if (d0 > d3) {
             rearrange(tour, i, j, k);
-            return -d0 + d3;
+            return true;
         }
-        return d0;
+        return false;
     }
 
     private static void rearrange(int[] route, int i, int j, int k) {
