@@ -1,7 +1,6 @@
 package com.github.schmittjoaopedro;
 
 import com.github.schmittjoaopedro.ls_2opt.OPT2Operator;
-import com.github.schmittjoaopedro.ls_2opt_mmas.OPT2OperatorMMAS;
 import com.github.schmittjoaopedro.ls_3opt.OPT3Operator;
 import com.github.schmittjoaopedro.ls_us.USOperator;
 import org.apache.commons.cli.*;
