@@ -30,11 +30,11 @@ public class USOperator implements LSOperator  {
         for (int i = 0; i < tour_length; i++) {
             tour[i] = route.get(i).getId();
         }
+        tsp_file.distances(graph);
     }
 
     @Override
     public void optimize() {
-        tsp_file.distances();
         // Init genius
         tourneelem pri;
         RouteG genius = new RouteG();

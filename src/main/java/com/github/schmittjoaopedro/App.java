@@ -2,6 +2,7 @@ package com.github.schmittjoaopedro;
 
 import com.github.schmittjoaopedro.ls_2opt.OPT2Operator;
 import com.github.schmittjoaopedro.ls_3opt.OPT3Operator;
+import com.github.schmittjoaopedro.ls_res3opt.OPT3RESOperator;
 import com.github.schmittjoaopedro.ls_us.USOperator;
 import org.apache.commons.cli.*;
 
@@ -16,20 +17,29 @@ public class App {
         Options options = getOptions();
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
+        boolean symmetric = true;
         if (!cmd.hasOption("tsp")) {
             throw new RuntimeException("Graph file is mandatory");
         }
+        System.out.println("Problem = " + cmd.getOptionValue("tsp"));
         Graph graph = TSPConverter.readGraph(cmd.getOptionValue("tsp"));
+        if (cmd.getOptionValue("tsp").endsWith(".atsp")) {
+            symmetric = false;
+        }
         if (graph != null) {
             List<Vertex> randomRoute = Utils.randomRoute(graph);
             Utils.printRouteCost(graph, randomRoute);
             if (cmd.hasOption("stat")) {
-                loadTest(graph, Integer.valueOf(cmd.getOptionValue("stat")));
+                loadTest(graph, Integer.valueOf(cmd.getOptionValue("stat")), symmetric);
             } else if ("all".equals(cmd.getOptionValue("ls"))) {
                 // 2-opt operator
                 execute(OPT2Operator.class, graph, randomRoute);
-                // 3-opt operator
-                execute(OPT3Operator.class, graph, randomRoute);
+                if (symmetric) {
+                    // 3-opt operator
+                    execute(OPT3Operator.class, graph, randomRoute);
+                }
+                // res-3-opt operator
+                execute(OPT3RESOperator.class, graph, randomRoute);
                 // US operator
                 execute(USOperator.class, graph, randomRoute);
             } else if (cmd.hasOption("tsp") && "us".equals(cmd.getOptionValue("ls"))) {
@@ -69,16 +79,20 @@ public class App {
         Utils.printRouteCost(graph, operator.getResult());
     }
 
-    private static void loadTest(Graph graph, int trials) {
+    private static void loadTest(Graph graph, int trials, boolean symmetric) {
         Map<String, List<Double>> means = new HashMap<>();
         means.put("rnd_tour_cost", new ArrayList<>());
         means.put("rnd_tour_time", new ArrayList<>());
         means.put("2opt_tour_cost", new ArrayList<>());
         means.put("2opt_tour_time", new ArrayList<>());
-        means.put("3opt_tour_cost", new ArrayList<>());
-        means.put("3opt_tour_time", new ArrayList<>());
         means.put("us_tour_cost", new ArrayList<>());
         means.put("us_tour_time", new ArrayList<>());
+        if (symmetric) {
+            means.put("3opt_tour_cost", new ArrayList<>());
+            means.put("3opt_tour_time", new ArrayList<>());
+        }
+        means.put("res_3opt_tour_cost", new ArrayList<>());
+        means.put("res_3opt_tour_time", new ArrayList<>());
         for (int i = 0; i < trials; i++) {
             // Random tour
             Long time = System.currentTimeMillis();
@@ -93,14 +107,24 @@ public class App {
             time = System.currentTimeMillis() - time;
             means.get("2opt_tour_cost").add(Utils.getRouteCost(graph, ls2opt.getResult()));
             means.get("2opt_tour_time").add((double) time);
-            // 3opt tour
-            LSOperator ls3opt = new OPT3Operator();
-            ls3opt.init(graph, randomTour);
+            if (symmetric) {
+                // 3opt tour
+                LSOperator ls3opt = new OPT3Operator();
+                ls3opt.init(graph, randomTour);
+                time = System.currentTimeMillis();
+                ls3opt.optimize();
+                time = System.currentTimeMillis() - time;
+                means.get("3opt_tour_cost").add(Utils.getRouteCost(graph, ls3opt.getResult()));
+                means.get("3opt_tour_time").add((double) time);
+            }
+            // res-3opt tour
+            LSOperator lsRes3opt = new OPT3RESOperator();
+            lsRes3opt.init(graph, randomTour);
             time = System.currentTimeMillis();
-            ls3opt.optimize();
+            lsRes3opt.optimize();
             time = System.currentTimeMillis() - time;
-            means.get("3opt_tour_cost").add(Utils.getRouteCost(graph, ls3opt.getResult()));
-            means.get("3opt_tour_time").add((double) time);
+            means.get("res_3opt_tour_cost").add(Utils.getRouteCost(graph, lsRes3opt.getResult()));
+            means.get("res_3opt_tour_time").add((double) time);
             // US tour
             LSOperator lsus = new USOperator();
             lsus.init(graph, randomTour);

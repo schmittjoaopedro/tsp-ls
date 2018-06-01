@@ -1,5 +1,7 @@
 package com.github.schmittjoaopedro.ls_us;
 
+import com.github.schmittjoaopedro.Graph;
+
 public class CoordG {
 
     public static int MAXN = 500;
@@ -19,12 +21,13 @@ public class CoordG {
         g[cities + 1].y = y;
     }
 
-    public void distances() {
+    public void distances(Graph graph) {
         for (int i = 1; i <= (task); i++) {
             for (int j = 1; j <= (task); j++) {
                 if (i != j) {
-                    d[i][j] = Math.sqrt(Math.pow((g[i].x - g[j].x), 2) + Math.pow((g[i].y - g[j].y), 2)) + 0.5;
+                    //d[i][j] = Math.sqrt(Math.pow((g[i].x - g[j].x), 2) + Math.pow((g[i].y - g[j].y), 2)) + 0.5;
                     //d[i][j] = (int)d[i][j] * traffic_factors[i-1][j-1];
+                    d[i][j] = graph.getEdge(i - 1, j - 1).getDistance();
                 }
             }
         }
