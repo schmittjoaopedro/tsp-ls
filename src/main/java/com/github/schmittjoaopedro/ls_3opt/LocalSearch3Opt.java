@@ -1,14 +1,12 @@
 package com.github.schmittjoaopedro.ls_3opt;
 
-public class LocalSearch3Opt {
+class LocalSearch3Opt {
 
-    public static void threeOpt(int[] tour, double[][] distances) {
+    static void threeOpt(int[] tour, double[][] distances) {
         int N = tour.length;
         boolean improvement = true;
         int newTour[] = new int[tour.length];
-        for (int i = 0; i < tour.length; i++) {
-            newTour[i] = tour[i];
-        }
+        System.arraycopy(tour, 0, newTour, 0, tour.length);
         while (improvement) {
             improvement = false;
             for (int i = 1; i < N; i++) {
@@ -16,9 +14,7 @@ public class LocalSearch3Opt {
                     for (int k = j + 2; k < N; k++) {
                         if (execute3Swap(newTour, distances, i, j, k) < 0) {
                             improvement = true;
-                            for (int t = 0; t < N; t++) {
-                                tour[t] = newTour[t];
-                            }
+                            System.arraycopy(newTour, 0, tour, 0, N);
                         }
                     }
                 }
@@ -58,12 +54,8 @@ public class LocalSearch3Opt {
     private static void rearrange(int[] route, int i, int j, int k) {
         int routeIJ[] = new int[j - i];
         int routeJK[] = new int[k - j];
-        for (int t = 0; t < routeIJ.length; t++) {
-            routeIJ[t] = route[i + t];
-        }
-        for (int t = 0; t < routeJK.length; t++) {
-            routeJK[t] = route[j + t];
-        }
+        System.arraycopy(route, i, routeIJ, 0, routeIJ.length);
+        System.arraycopy(route, j, routeJK, 0, routeJK.length);
         int countIJ = 0;
         int countJK = 0;
         for (int t = 0; t < route.length; t++) {
@@ -84,19 +76,10 @@ public class LocalSearch3Opt {
             j = aux;
         }
         int sub[] = new int[j - i];
-        for (int k = 0; k < sub.length; k++) {
-            sub[k] = tour[i + k];
-        }
+        System.arraycopy(tour, i, sub, 0, sub.length);
         for (int k = i; k < i + sub.length; k++) {
             tour[k] = sub[j - k - 1];
         }
     }
 
-    private static double getTourLength(int[] tour, double[][] distances) {
-        double dist = 0;
-        for (int i = 0; i < tour.length - 1; i++) {
-            dist += distances[tour[i]][tour[i + 1]];
-        }
-        return dist;
-    }
 }
