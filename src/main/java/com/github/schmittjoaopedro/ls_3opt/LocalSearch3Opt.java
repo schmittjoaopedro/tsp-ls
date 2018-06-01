@@ -15,14 +15,11 @@ public class LocalSearch3Opt {
             for (int i = 1; i < N; i++) {
                 for (int j = i + 2; j < N; j++) {
                     for (int k = j + 2; k < N; k++) {
-                        execute3Swap(newTour, distances, i, j, k);
-                        double new_distance = getTourLength(newTour, distances);
-                        if (new_distance < best_distance) {
+                        if (execute3Swap(newTour, distances, i, j, k) < 0) {
                             improvement = true;
                             for (int t = 0; t < N; t++) {
                                 tour[t] = newTour[t];
                             }
-                            best_distance = new_distance;
                         }
                     }
                 }
@@ -60,7 +57,7 @@ public class LocalSearch3Opt {
     }
 
     private static void rearrange(int[] route, int i, int j, int k) {
-         int routeIJ[] = new int[j - i];
+        int routeIJ[] = new int[j - i];
         int routeJK[] = new int[k - j];
         for (int t = 0; t < routeIJ.length; t++) {
             routeIJ[t] = route[i + t];
