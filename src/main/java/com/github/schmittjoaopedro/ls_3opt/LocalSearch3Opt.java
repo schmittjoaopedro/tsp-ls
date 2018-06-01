@@ -5,7 +5,6 @@ public class LocalSearch3Opt {
     public static void threeOpt(int[] tour, double[][] distances) {
         int N = tour.length;
         boolean improvement = true;
-        double best_distance = getTourLength(tour, distances);
         int newTour[] = new int[tour.length];
         for (int i = 0; i < tour.length; i++) {
             newTour[i] = tour[i];
