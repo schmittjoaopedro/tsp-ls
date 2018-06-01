@@ -1,4 +1,4 @@
-package com.github.schmittjoaopedro.us;
+package com.github.schmittjoaopedro.ls_us;
 
 public class tourne {
 

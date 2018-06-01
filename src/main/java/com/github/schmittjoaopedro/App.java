@@ -1,7 +1,9 @@
 package com.github.schmittjoaopedro;
 
-import com.github.schmittjoaopedro.opt2.OPT2Operator;
-import com.github.schmittjoaopedro.us.USOperator;
+import com.github.schmittjoaopedro.ls_2opt.OPT2Operator;
+import com.github.schmittjoaopedro.ls_2opt_mmas.OPT2OperatorMMAS;
+import com.github.schmittjoaopedro.ls_3opt.OPT3Operator;
+import com.github.schmittjoaopedro.ls_us.USOperator;
 import org.apache.commons.cli.*;
 
 import java.util.List;
@@ -12,39 +14,28 @@ public class App {
         Options options = getOptions();
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
-
-        if (cmd.hasOption("tsp") && "all".equals(cmd.getOptionValue("ls"))) {
-            Graph graph = TSPConverter.readGraph(cmd.getOptionValue("tsp"));
-            List<Vertex> randomRoute = Utils.randomRoute(graph);
+        Graph graph;
+        List<Vertex> randomRoute;
+        if (cmd.hasOption("tsp")) {
+            graph = TSPConverter.readGraph(cmd.getOptionValue("tsp"));
+            randomRoute = Utils.randomRoute(graph);
             Utils.printRouteCost(graph, randomRoute);
-            // US operator
-            System.out.print("US Operator    - ");
-            USOperator usOperator = new USOperator(graph, randomRoute);
-            Long time = System.currentTimeMillis();
-            usOperator.optimize();
-            System.out.print("Time(s) = " + ((System.currentTimeMillis() - time) / 1000.0) + " ");
-            Utils.printRouteCost(graph, usOperator.getResult());
+        } else {
+            throw new RuntimeException("Graph file is mandatory");
+        }
+        if ("all".equals(cmd.getOptionValue("ls"))) {
             // 2-opt operator
-            System.out.print("2-opt Operator - ");
-            OPT2Operator opt2Operator = new OPT2Operator(graph, randomRoute);
-            time = System.currentTimeMillis();
-            opt2Operator.optimize();
-            System.out.print("Time(s) = " + ((System.currentTimeMillis() - time) / 1000.0) + " ");
-            Utils.printRouteCost(graph, opt2Operator.getResult());
+            execute(OPT2Operator.class, graph, randomRoute);
+            // 3-opt operator
+            execute(OPT3Operator.class, graph, randomRoute);
+            // US operator
+            execute(USOperator.class, graph, randomRoute);
         } else if (cmd.hasOption("tsp") && "us".equals(cmd.getOptionValue("ls"))) {
-            Graph graph = TSPConverter.readGraph(cmd.getOptionValue("tsp"));
-            List<Vertex> randomRoute = Utils.randomRoute(graph);
-            Utils.printRouteCost(graph, randomRoute);
-            USOperator usOperator = new USOperator(graph, randomRoute);
-            usOperator.optimize();
-            Utils.printRouteCost(graph, usOperator.getResult());
-        } else if (cmd.hasOption("tsp") && "2opt".equals(cmd.getOptionValue("ls"))) {
-            Graph graph = TSPConverter.readGraph(cmd.getOptionValue("tsp"));
-            List<Vertex> randomRoute = Utils.randomRoute(graph);
-            Utils.printRouteCost(graph, randomRoute);
-            OPT2Operator opt2Operator = new OPT2Operator(graph, randomRoute);
-            opt2Operator.optimize();
-            Utils.printRouteCost(graph, opt2Operator.getResult());
+            execute(USOperator.class, graph, randomRoute);
+        } else if (cmd.hasOption("tsp") && "2-opt".equals(cmd.getOptionValue("ls"))) {
+            execute(USOperator.class, graph, randomRoute);
+        } else if (cmd.hasOption("tsp") && "3-opt".equals(cmd.getOptionValue("ls"))) {
+            execute(OPT3Operator.class, graph, randomRoute);
         } else {
             HelpFormatter helpFormatter = new HelpFormatter();
             helpFormatter.printHelp("Local search for TSP instances.", options);
@@ -57,8 +48,21 @@ public class App {
         options.addOption(Option.builder("ls").hasArg().numberOfArgs(1).argName("local_search")
                 .desc("all = All local search\n" +
                         "us = Unstringing and Stringing\n" +
-                        "2opt = 2-opt moves").build());
+                        "2-opt = 2-opt moves\n" +
+                        "3-opt = 3-opt moves").build());
         return options;
+    }
+
+    public static void execute(Class<? extends LSOperator> operatorClass, Graph graph, List<Vertex> tour) throws Exception {
+        String message = operatorClass.getSimpleName();
+        while (message.length() < 20) message += " ";
+        message += " - ";
+        LSOperator operator = operatorClass.getDeclaredConstructor().newInstance();
+        operator.init(graph, tour);
+        Long time = System.currentTimeMillis();
+        operator.optimize();
+        System.out.printf("%sTime(ms) = %.8f ", message, ((System.currentTimeMillis() - time) / 1000.0));
+        Utils.printRouteCost(graph, operator.getResult());
     }
 
 }

@@ -1,4 +1,4 @@
-package com.github.schmittjoaopedro.opt2;
+package com.github.schmittjoaopedro.ls_2opt;
 
 public class LocalSearch2Opt {
 

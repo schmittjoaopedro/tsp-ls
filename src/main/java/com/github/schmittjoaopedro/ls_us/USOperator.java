@@ -1,12 +1,13 @@
-package com.github.schmittjoaopedro.us;
+package com.github.schmittjoaopedro.ls_us;
 
 import com.github.schmittjoaopedro.Graph;
+import com.github.schmittjoaopedro.LSOperator;
 import com.github.schmittjoaopedro.Vertex;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class USOperator {
+public class USOperator implements LSOperator  {
 
     private int problem_size;
     private int tour_length;
@@ -14,7 +15,8 @@ public class USOperator {
     private int[] tour;
     private Graph graph;
 
-    public USOperator(Graph graph, List<Vertex> route) {
+    @Override
+    public void init(Graph graph, List<Vertex> route) {
         this.graph = graph;
         problem_size = graph.getVertexLength();
         tour_length = route.size();
@@ -30,6 +32,7 @@ public class USOperator {
         }
     }
 
+    @Override
     public void optimize() {
         tsp_file.distances();
         // Init genius
@@ -63,6 +66,7 @@ public class USOperator {
         }
     }
 
+    @Override
     public List<Vertex> getResult() {
         List<Vertex> optimized = new ArrayList<>();
         for(int i = 0; i < tour.length; i++) {
