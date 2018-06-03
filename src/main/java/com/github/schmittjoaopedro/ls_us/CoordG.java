@@ -33,4 +33,26 @@ public class CoordG {
         }
     }
 
+    public void distances(double[][] distances) {
+        for (int i = 1; i <= (task); i++) {
+            for (int j = 1; j <= (task); j++) {
+                if (i != j) {
+                    d[i][j] = distances[i - 1][j - 1];
+                    //d[i][j] = (int)d[i][j] * traffic_factors[i-1][j-1];
+                }
+            }
+        }
+    }
+
+    public void distances(int[][] distances) {
+        for (int i = 1; i <= (task); i++) {
+            for (int j = 1; j <= (task); j++) {
+                if (i != j) {
+                    d[i][j] = distances[i - 1][j - 1];
+                    //d[i][j] = (int)d[i][j] * traffic_factors[i-1][j-1];
+                }
+            }
+        }
+    }
+
 }

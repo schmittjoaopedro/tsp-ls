@@ -63,14 +63,14 @@ public class RouteG {
         lngtotal = lngtotal + lng;
     }
 
-    void initialize() {
+    public void initialize() {
         int lesk;
         for (lesk = 0; lesk <= CoordG.MAXN; lesk++) {
             t.noeudinterne[lesk] = 0;
         }
     }
 
-    void initnneighbour(int n) {
+    public void initnneighbour(int n) {
         int i, j;
 
         for (i = 1; i <= n; i++) {
@@ -88,7 +88,7 @@ public class RouteG {
     }
 
     //void petittourne(int city , coord g[CoordG.MAXN+1])
-    void petittourne(int city, coord g[]) {
+    public void petittourne(int city, coord g[]) {
         t.noeudinterne[city + 1] = 1;
         t.nbredenoeuds = 1;
         t.ptr = new tourneelem();
@@ -99,7 +99,7 @@ public class RouteG {
     }
 
     //void ajoutenoeudprox(int aj, int n, const float d[][CoordG.MAXN+1])
-    void ajoutenoeudprox(int aj, int n, double d[][]) {
+    public void ajoutenoeudprox(int aj, int n, double d[][]) {
 
         int i, nmaximum = 0, j;
         int k1;
@@ -167,7 +167,7 @@ public class RouteG {
     }
 
     //void RouteG::ajoute_a_tourne(int ind, coord g[CoordG.MAXN+1])
-    void ajoute_a_tourne(int ind, coord g[]) {
+    public void ajoute_a_tourne(int ind, coord g[]) {
         tourneelem p;
 
         p = t.ptr.precedent;
@@ -181,7 +181,7 @@ public class RouteG {
         g[ind + 1].ptrtourne = t.ptr.precedent;
     }
 
-    boolean numerote_tourne() {
+    public boolean numerote_tourne() {
         tourneelem w;
         int i, j;
         boolean indtrue;
@@ -773,7 +773,7 @@ public class RouteG {
     } /* END OF OTERX */
 
     //void RouteG::route_copy(int n, coord g[CoordG.MAXN+1],const float d[][CoordG.MAXN+1],const double tour)
-    void route_copy(int n, coord g[], double d[][], double tour) {
+    public void route_copy(int n, coord g[], double d[][], double tour) {
         coord g2[] = new coord[CoordG.MAXN + 1];
         tourne t2 = new tourne();
         tourneelem xx, yy;
