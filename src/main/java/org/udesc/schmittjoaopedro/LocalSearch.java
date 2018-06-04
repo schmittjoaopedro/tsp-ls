@@ -1644,20 +1644,29 @@ public class LocalSearch {
         }
     }
 
+    private static CoordG tsp_file;
+
+    static void init_us() {
+        int problem_size = Tsp.n;
+        tsp_file = new CoordG();
+        CoordG.MAXN = problem_size;
+        for (int i = 0; i < problem_size; i++) {
+            tsp_file.xyvalues(problem_size, i, Tsp.instance.nodeptr[i].x, Tsp.instance.nodeptr[i].y);
+        }
+        //tsp_file.distances(Tsp.instance.distance);
+        Tsp.instance.distanceDouble = new double[Tsp.instance.distance.length + 1][Tsp.instance.distance.length + 1];
+        for (int i = 0; i < Tsp.instance.distance.length; i++) {
+            for (int j = 0; j < Tsp.instance.distance.length; j++) {
+                Tsp.instance.distanceDouble[i + 1][j + 1] = Tsp.instance.distance[i][j];
+            }
+        }
+        tsp_file.d = Tsp.instance.distanceDouble;
+    }
 
     static void unstringing_stringing(int[] route) {
         int problem_size = Tsp.n;
         int tour_length = route.length;
-        CoordG.MAXN = problem_size;
-        CoordG tsp_file = new CoordG();
-        for (int i = 0; i < problem_size; i++) {
-            tsp_file.xyvalues(problem_size, i, Tsp.instance.nodeptr[i].x, Tsp.instance.nodeptr[i].y);
-        }
-        int tour[] = new int[tour_length];
-        for (int i = 0; i < tour_length; i++) {
-            tour[i] = route[i];
-        }
-        tsp_file.distances(Tsp.instance.distance);
+        int tour[] = route;
         // Init genius
         tourneelem pri;
         RouteG genius = new RouteG();
@@ -1686,9 +1695,6 @@ public class LocalSearch {
                 pri = pri.prochain;
             }
             tour[problem_size] = tour[0];
-        }
-        for(int i = 0; i < tour.length; i++) {
-            route[i] = tour[i];
         }
     }
 

@@ -164,37 +164,27 @@ public class AcoTsp {
         int k;
 
         // TRACE ( System.out.println("apply local search to all ants\n"); );
-        if (LocalSearch.ls_flag == 4) {
-            if (Ants.best_so_far_ant.tour_length == Integer.MAX_VALUE) {
-                for (k = 0; k < Ants.n_ants; k++) {
-                    LocalSearch.unstringing_stringing(Ants.ant[k].tour);
-                    Ants.ant[k].tour_length = Tsp.compute_tour_length(Ants.ant[k].tour);
-                }
-            } else {
-                int iteration_best_ant = Ants.find_best();
-                LocalSearch.unstringing_stringing(Ants.ant[iteration_best_ant].tour); /* us local search */
-                Ants.ant[iteration_best_ant].tour_length = Tsp.compute_tour_length(Ants.ant[iteration_best_ant].tour);
+        for (k = 0; k < Ants.n_ants; k++) {
+            switch (LocalSearch.ls_flag) {
+                case 1:
+                    LocalSearch.two_opt_first(Ants.ant[k].tour); /* 2-opt local search */
+                    break;
+                case 2:
+                    LocalSearch.two_h_opt_first(Ants.ant[k].tour); /* 2.5-opt local search */
+                    break;
+                case 3:
+                    LocalSearch.three_opt_first(Ants.ant[k].tour); /* 3-opt local search */
+                    break;
+                case 4:
+                    LocalSearch.unstringing_stringing(Ants.ant[k].tour); /* us local search */
+                    break;
+                default:
+                    System.err.println("type of local search procedure not correctly specified");
+                    System.exit(1);
             }
-        } else {
-            for (k = 0; k < Ants.n_ants; k++) {
-                switch (LocalSearch.ls_flag) {
-                    case 1:
-                        LocalSearch.two_opt_first(Ants.ant[k].tour); /* 2-opt local search */
-                        break;
-                    case 2:
-                        LocalSearch.two_h_opt_first(Ants.ant[k].tour); /* 2.5-opt local search */
-                        break;
-                    case 3:
-                        LocalSearch.three_opt_first(Ants.ant[k].tour); /* 3-opt local search */
-                        break;
-                    default:
-                        System.err.println("type of local search procedure not correctly specified");
-                        System.exit(1);
-                }
-                Ants.ant[k].tour_length = Tsp.compute_tour_length(Ants.ant[k].tour);
-                if (termination_condition())
-                    return;
-            }
+            Ants.ant[k].tour_length = Tsp.compute_tour_length(Ants.ant[k].tour);
+            if (termination_condition())
+                return;
         }
     }
 
@@ -411,6 +401,10 @@ public class AcoTsp {
         System.out.println("Initialization took " + InOut.time_used + " seconds\n");
 
         for (InOut.n_try = 0; InOut.n_try < InOut.max_tries; InOut.n_try++) {
+
+            if (LocalSearch.ls_flag == 4) {
+                LocalSearch.init_us();
+            }
 
             init_try(InOut.n_try);
 

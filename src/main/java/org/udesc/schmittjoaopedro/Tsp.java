@@ -67,6 +67,7 @@ public class Tsp {
         int n_near; /* number of nearest neighbors */
         point[] nodeptr; /* array of structs containing coordinates of nodes */
         int[][] distance; /* distance matrix: distance[i][j] gives distance */
+        double[][] distanceDouble;
         int[][] nn_list; /* nearest neighbor list; contains for each node i a sorted list of n_near nearest neighbors */
     }
 
