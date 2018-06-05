@@ -162,12 +162,17 @@ public class App {
         }
         printValue("rnd_tour_time", means.get("rnd_tour_time"), trials);
         printValue("2opt_tour_time", means.get("2opt_tour_time"), trials);
+        printValue("2opt_aco_tour_time", means.get("2opt_aco_tour_time"), trials);
         printValue("3opt_tour_time", means.get("3opt_tour_time"), trials);
+        printValue("3opt_aco_tour_time", means.get("3opt_aco_tour_time"), trials);
         printValue("res_3opt_tour_time", means.get("res_3opt_tour_time"), trials);
         printValue("us_tour_time", means.get("us_tour_time"), trials);
+        System.out.println(" ");
         printValue("rnd_tour_cost", means.get("rnd_tour_cost"), trials);
         printValue("2opt_tour_cost", means.get("2opt_tour_cost"), trials);
+        printValue("2opt_aco_tour_cost", means.get("2opt_aco_tour_cost"), trials);
         printValue("3opt_tour_cost", means.get("3opt_tour_cost"), trials);
+        printValue("3opt_aco_tour_cost", means.get("3opt_aco_tour_cost"), trials);
         printValue("res_3opt_tour_cost", means.get("res_3opt_tour_cost"), trials);
         printValue("us_tour_cost", means.get("us_tour_cost"), trials);
     }
