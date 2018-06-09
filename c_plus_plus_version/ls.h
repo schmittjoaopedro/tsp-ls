@@ -60,4 +60,8 @@ void two_h_opt_first(long int *tour, int n, int **distance, int **nn_list, int n
 
 void three_opt_first(long int *tour, int n, int **distance, int **nn_list, int nn_ls);
 
-void three_opt_res(long int *tour, int n, int **distance);
+void three_opt_res(int *tour, double **distance, int problem_size);
+
+double execute3Swap(int *tour, int routeLength, double **dist, int i, int j, int k);
+
+void rearrange(int *route, int routeLength, int i, int j, int k);

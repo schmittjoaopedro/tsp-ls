@@ -1444,3 +1444,69 @@ void three_opt_first(long int *tour, int n, int **distance, int **nn_list, int n
 	free(pos);
 	free(dlb);
 }
+
+void three_opt_res(int *tour, double **distance, int problem_size) {
+	bool improvement = true;
+	int tour_length = problem_size + 1;
+	int *new_tour = new int[tour_length];
+	for (int i = 0; i < tour_length; i++) {
+		new_tour[i] = tour[i];
+	}
+	while (improvement) {
+		improvement = false;
+		for (int i = 1; i < tour_length; i++) {
+			for (int j = i + 2; j < tour_length; j++) {
+				for (int k = j + 2; k < tour_length; k++) {
+					if (execute3Swap(new_tour, tour_length, distance, i, j, k) < 0) {
+						improvement = true;
+						for (int i = 0; i < tour_length; i++) {
+							tour[i] = new_tour[i];
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+double execute3Swap(int *tour, int routeLength, double **dist, int i, int j, int k) {
+	// [...,A-B,...,C-D,...,E-F,...]
+	int a = tour[i - 1];
+	int b = tour[i];
+	int c = tour[j - 1];
+	int d = tour[j];
+	int e = tour[k - 1];
+	int f = tour[k];
+	double d0 = dist[a][b] + dist[c][d] + dist[e][f];
+	double d3 = dist[a][d] + dist[e][b] + dist[c][f];
+	if (d0 > d3) {
+		rearrange(tour, routeLength, i, j, k);
+		return -d0 + d3;
+	}
+	return d0;
+}
+
+void rearrange(int *route, int routeLength, int i, int j, int k) {
+	int routeIJLength = j - i;
+	int routeJKLength = k - j;
+	int *routeIJ = new int[routeIJLength];
+	int *routeJK = new int[routeJKLength];
+	for (int t = 0; t < routeIJLength; t++) {
+		routeIJ[t] = route[i + t];
+	}
+	for (int t = 0; t < routeJKLength; t++) {
+		routeJK[t] = route[j + t];
+	}
+	int countIJ = 0;
+	int countJK = 0;
+	for (int t = 0; t < routeLength; t++) {
+		if (t > i - 1 && t < i + routeJKLength) {
+			route[t] = routeJK[countJK];
+			countJK++;
+		}
+		else if (t >= i + routeJKLength && t < i + routeJKLength + routeIJLength) {
+			route[t] = routeIJ[countIJ];
+			countIJ++;
+		}
+	}
+}
